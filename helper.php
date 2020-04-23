@@ -25,6 +25,7 @@ class helper_plugin_oauth extends DokuWiki_Plugin {
 
         require_once(__DIR__.'/phpoauthlib/src/OAuth/bootstrap.php');
         require_once(__DIR__.'/classes/AbstractAdapter.php');
+        require_once(__DIR__.'/classes/AbstractGenericAdapter.php');
         require_once(__DIR__.'/classes/oAuthHTTPClient.php');
         require_once(__DIR__.'/classes/oAuthStorage.php');
 
@@ -42,8 +43,8 @@ class helper_plugin_oauth extends DokuWiki_Plugin {
 
         // The generic service can be externally configured
         if(is_a($service->oAuth, 'OAuth\\OAuth2\\Service\\Generic')) {
-            $service->oAuth->setAuthorizationEndpoint($this->getAuthEndpoint($servicename));
-            $service->oAuth->setAccessTokenEndpoint($this->getTokenEndpoint($servicename));
+            $service->oAuth->setAuthorizationEndpoint($service->getAuthEndpoint());
+            $service->oAuth->setAccessTokenEndpoint($service->getTokenEndpoint());
         }
 
         return $service;
@@ -102,6 +103,17 @@ class helper_plugin_oauth extends DokuWiki_Plugin {
     public function getSecret($service) {
         $service = strtolower($service);
         return $this->getConf($service.'-secret');
+    }
+
+    /**
+     * Return the configured Authentication Endpoint URL for the given service
+     *
+     * @param $service
+     * @return string
+     */
+    public function getUrl($service) {
+        $service = strtolower($service);
+        return $this->getConf($service.'-url');
     }
 
     /**
